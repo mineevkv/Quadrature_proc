@@ -27,11 +27,12 @@ def mfilter(filter_data, f0, band, fs, points):
     filter_data[point_start:point_end] = window
     return
 
-def phase_calc(myfilter, f0, band, fs, points, index_start, index_end, CH1V, CH2V):
-    mfilter(myfilter, f0, band, fs, points)
+def phase_calc(scope, myfilter):
+    # myfilter, f0, band, fs, points, index_start, index_end, CH1V, CH2V):
+    # mfilter(myfilter, f0, band, fs, points)
 
-    Op = CH1V[index_start:index_end]
-    Ch = CH2V[index_start:index_end]
+    Op = scope.ch1[scope.index_start:scope.index_end]
+    Ch = scope.ch2[scope.index_start:scope.index_end]
 
     Op = Op - np.mean(Op)
     Ch = Ch - np.mean(Ch)
@@ -39,11 +40,11 @@ def phase_calc(myfilter, f0, band, fs, points, index_start, index_end, CH1V, CH2
     spOp = fft(Op)
     spCh = fft(Ch)
 
-    spOp = np.multiply(spOp, myfilter)
-    spCh = np.multiply(spCh, myfilter)
+    spOp = np.multiply(spOp, myfilter.dataarray)
+    spCh = np.multiply(spCh, myfilter.dataarray)
 
     Op = ifft(spOp)
     Ch = ifft(spCh)
     Interferogramm = np.multiply(Op, np.conj(Ch))
     Phi = np.angle(Interferogramm)
-    return Phi
+    return Phi*180/np.pi

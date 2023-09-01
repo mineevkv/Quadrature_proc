@@ -12,6 +12,7 @@ class Oscilloscope:
     index_start = index_end = 0  # index values of signal slice
     points = 0
     fs = 0  # Sampling Frequency
+    status = {'CH1': True, 'CH2': True, 'CH3': False, 'CH4': True}
 
     def __init__(self, filename):
         self.open_file(filename)
@@ -50,6 +51,9 @@ class Oscilloscope:
         self.calc_points()
 
     def calc_points(self):
+        if (self.index_end - self.index_start)%2:
+            if self.index_start%2:
+               self.index_start -= 1
+            elif self.index_end%2:
+               self.index_end += 1
         self.points = self.index_end - self.index_start
-        if self.points % 2:
-            self.points -= 1
