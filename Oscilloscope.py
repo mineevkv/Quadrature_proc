@@ -1,7 +1,8 @@
-import math as m
+
 import numpy as np
 import os.path
 import logging
+
 
 class Oscilloscope:
     datafolder = 'data'
@@ -10,12 +11,13 @@ class Oscilloscope:
     time = 0  # seconds
     index_start = index_end = 0  # index values of signal slice
     points = 0
+    fs = 0  # Sampling Frequency
 
     def __init__(self, filename):
         self.open_file(filename)
         self.read_data()
         self.index_end = len(self.time) - 1
-
+        self.fs = 1 / (self.time[1] - self.time[0])
 
     def open_file(self, filename):
         if os.path.exists(f'np{filename}.npy'):
@@ -36,6 +38,7 @@ class Oscilloscope:
             if self.time[i] > time_start:
                 self.index_start = i
                 break
+        self.calc_points()
 
     def calc_index_end(self, time_end):
         for i in range(len(self.time[self.index_start:])):
@@ -44,9 +47,9 @@ class Oscilloscope:
                 # if (self.index_end - self.index_start) % 2:
                 #     self.index_end -= 1
                 break
+        self.calc_points()
 
     def calc_points(self):
         self.points = self.index_end - self.index_start
         if self.points % 2:
             self.points -= 1
-
