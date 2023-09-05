@@ -48,3 +48,16 @@ def phase_calc(scope, myfilter):
     Interferogramm = np.multiply(Op, np.conj(Ch))
     Phi = np.angle(Interferogramm)
     return Phi*180/np.pi
+
+def calc_center_freq(scope):
+    fourier = fft(scope.ch1)
+    timestep = scope.time[1] - scope.time[0]
+
+    freq = np.fft.fftfreq(scope.ch1.size, d=timestep)
+    max_element = abs(fourier)[0]
+    for i in range(1, len(fourier)):  # iterate over array
+        if abs(fourier[i]) > max_element:  # to check max value
+            max_element = abs(fourier[i])
+            ind = i
+
+    return freq[ind]

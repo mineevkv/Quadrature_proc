@@ -12,7 +12,7 @@ class Oscilloscope:
     index_start = index_end = 0  # index values of signal slice
     points = 0
     fs = 0  # Sampling Frequency
-    status = {'CH1': True, 'CH2': True, 'CH3': False, 'CH4': True}
+    status = {'CH1': True, 'CH2': True, 'CH3': True, 'CH4': True}
 
     def __init__(self, filename):
         self.filename = filename

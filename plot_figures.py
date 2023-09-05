@@ -23,7 +23,7 @@ class PlotFig:
         self.index_start = 0
         self.index_end = len(scope.time) - 1
 
-        self.plot_original(scope)
+        self.plot_original(scope, myfilter)
         self.plot_phase(scope, phase)
 
         self.plot_settings(scope)
@@ -33,7 +33,7 @@ class PlotFig:
         self.btn_reset.on_clicked(self.reset)
         plt.show()
 
-    def plot_original(self, scope):
+    def plot_original(self, scope, myfilter):
         if scope.status['CH1']:
             self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch1[self.index_start:self.index_end],
                          color='gold', linewidth=0.5, label='CH1')
@@ -41,22 +41,25 @@ class PlotFig:
             self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch2[self.index_start:self.index_end],
                          color='cyan', linewidth=0.5, label='CH2')
         if scope.status['CH3']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch3[self.index_start:self.index_end],
+            self.ax.plot(scope.time[self.index_start:self.index_end], 0.05*scope.ch3[self.index_start:self.index_end],
                          color='magenta', linewidth=0.5, label='CH3')
         if scope.status['CH4']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch4[self.index_start:self.index_end],
+            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch4[self.index_start:self.index_end] - np.mean(scope.ch4[0:5000]),
                          color='dodgerblue', linewidth=0.5, label='CH4')
 
         self.ax.axvline(x=scope.time[scope.index_start], color='red', linewidth=2)
         self.ax.axvline(x=scope.time[scope.index_end], color='red', linewidth=2)
 
-        font = {'weight': 'bold', 'size': 12}
+        font = {'weight': 'bold', 'size': 16}
         x1 = (scope.time[scope.index_start]-scope.time[0])/(scope.time[len(scope.time)-1] - scope.time[0])
         x2 = (scope.time[scope.index_end] - scope.time[0]) / (scope.time[len(scope.time) - 1] - scope.time[0])
         self.ax.text(x1, 1, f'{round(scope.time[scope.index_start]*1e6, 2)} us', color='red',
                      horizontalalignment='right', verticalalignment=f'bottom', transform=self.ax.transAxes, **font)
         self.ax.text(x2, 1, f'{round(scope.time[scope.index_end] * 1e6, 2)} us', color='red',
                      horizontalalignment='left', verticalalignment=f'bottom', transform=self.ax.transAxes, **font)
+
+        self.ax.text(0.5, 0.98, f'f = {round(myfilter.f0 / 1e6, 6)} MHz', color='white',
+                     horizontalalignment='center', verticalalignment=f'top', transform=self.ax.transAxes, **font)
 
 
     def plot_phase(self, scope, phase):
