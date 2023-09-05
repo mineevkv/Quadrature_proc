@@ -15,6 +15,7 @@ class Oscilloscope:
     status = {'CH1': True, 'CH2': True, 'CH3': False, 'CH4': True}
 
     def __init__(self, filename):
+        self.filename = filename
         self.open_file(filename)
         self.read_data()
         self.index_end = len(self.time) - 1
@@ -45,8 +46,6 @@ class Oscilloscope:
         for i in range(len(self.time[self.index_start:])):
             if self.time[self.index_start + i] > time_end:
                 self.index_end = self.index_start + i
-                # if (self.index_end - self.index_start) % 2:
-                #     self.index_end -= 1
                 break
         self.calc_points()
 
