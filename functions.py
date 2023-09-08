@@ -31,8 +31,8 @@ def phase_calc(scope, myfilter):
     # myfilter, f0, band, fs, points, index_start, index_end, CH1V, CH2V):
     # mfilter(myfilter, f0, band, fs, points)
 
-    Op = scope.ch1[scope.index_start:scope.index_end]
-    Ch = scope.ch2[scope.index_start:scope.index_end]
+    Op = scope.voltage['CH1'][scope.index_start:scope.index_end]
+    Ch = scope.voltage['CH2'][scope.index_start:scope.index_end]
 
     Op = Op - np.mean(Op)
     Ch = Ch - np.mean(Ch)
@@ -50,10 +50,10 @@ def phase_calc(scope, myfilter):
     return Phi*180/np.pi
 
 def calc_center_freq(scope):
-    fourier = fft(scope.ch1)
+    fourier = fft(scope.voltage['CH1'])
     timestep = scope.time[1] - scope.time[0]
 
-    freq = np.fft.fftfreq(scope.ch1.size, d=timestep)
+    freq = np.fft.fftfreq(scope.voltage['CH1'].size, d=timestep)
     max_element = abs(fourier)[0]
     for i in range(1, len(fourier)):  # iterate over array
         if abs(fourier[i]) > max_element:  # to check max value

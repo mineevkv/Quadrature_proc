@@ -6,6 +6,10 @@ from functions import *
 class PlotFig:
     line = None
 
+    Y_scale_factor = {'CH1': 3.4, 'CH2': 4, 'CH3': 0.05, 'CH4': 1}
+    color = {'CH1': 'gold', 'CH2': 'cyan', 'CH3': 'magenta', 'CH4': 'dodgerblue'}
+    status = {'CH1': True, 'CH2': True, 'CH3': False, 'CH4': True}
+
     def __init__(self, scope, phase, myfilter):
         px = 1 / plt.rcParams['figure.dpi']
         plt.style.use('dark_background')
@@ -34,18 +38,18 @@ class PlotFig:
         plt.show()
 
     def plot_original(self, scope, myfilter):
-        if scope.status['CH1']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch1[self.index_start:self.index_end],
-                         color='gold', linewidth=0.5, label='CH1')
-        if scope.status['CH2']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch2[self.index_start:self.index_end],
-                         color='cyan', linewidth=0.5, label='CH2')
-        if scope.status['CH3']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], 0.05*scope.ch3[self.index_start:self.index_end],
-                         color='magenta', linewidth=0.5, label='CH3')
-        if scope.status['CH4']:
-            self.ax.plot(scope.time[self.index_start:self.index_end], scope.ch4[self.index_start:self.index_end] - np.mean(scope.ch4[0:5000]),
-                         color='dodgerblue', linewidth=0.5, label='CH4')
+
+        for key in self.status.keys():
+            if self.status[key]:
+                if self.Y_scale_factor[key] == 1:
+                    self.ax.plot(scope.time[self.index_start:self.index_end],
+                                 scope.voltage[key][self.index_start:self.index_end],
+                                 color=self.color[key], linewidth=0.5, label=key)
+                else:
+                    self.ax.plot(scope.time[self.index_start:self.index_end],
+                                 self.Y_scale_factor[key] * scope.voltage[key][self.index_start:self.index_end],
+                                 color=self.color[key], linewidth=0.5,
+                                 label=key + r' $\cdot$ ' + f'{self.Y_scale_factor[key]}')
 
         self.ax.axvline(x=scope.time[scope.index_start], color='red', linewidth=2)
         self.ax.axvline(x=scope.time[scope.index_end], color='red', linewidth=2)
@@ -58,7 +62,7 @@ class PlotFig:
         self.ax.text(x2, 1, f'{round(scope.time[scope.index_end] * 1e6, 2)} us', color='red',
                      horizontalalignment='left', verticalalignment=f'bottom', transform=self.ax.transAxes, **font)
 
-        self.ax.text(0.5, 0.98, f'f = {round(myfilter.f0 / 1e6, 6)} MHz', color='white',
+        self.ax.text(0.5, 0.98, r'$f_0 = $' + f'{round(myfilter.f0 / 1e6, 6)} MHz', color='white',
                      horizontalalignment='center', verticalalignment=f'top', transform=self.ax.transAxes, **font)
 
 
@@ -74,7 +78,7 @@ class PlotFig:
         self.ax2.set_ylabel('Phase, degree')
         font = {'weight': 'bold', 'size': 16}
         self.ax.set_title(f'{scope.filename}.csv', **font)
-        self.ax.legend(loc='lower right')
+        self.ax.legend(loc='lower right', labelcolor='linecolor', fontsize=12)
 
     def set_limits(self, scope):
         self.ax.set_xlim(scope.time[self.index_start], scope.time[self.index_end])
@@ -87,26 +91,3 @@ class PlotFig:
 
     def reset(self, event):
         self.filter_slider.reset()
-
-    # resetax = fig.add_axes([0.8, 0.01, 0.1, 0.04])
-    #
-# plot result
-
-
-#
-# Make a horizontal slider to control the frequency.
-
-# The function to be called anytime a slider's value changes
-
-
-# register the update function with each slider
-
-
-# Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
-# resetax = fig.add_axes([0.8, 0.01, 0.1, 0.04])
-# button = Button(resetax, 'Reset', hovercolor='dodgerblue')
-#
-#
-# def reset(event):
-#     freq_slider.reset()
-# button.on_clicked(reset)

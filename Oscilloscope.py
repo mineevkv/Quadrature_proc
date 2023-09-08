@@ -7,12 +7,11 @@ import logging
 class Oscilloscope:
     datafolder = 'data'
     data = 0  # general data array
-    ch1 = ch2 = ch3 = ch4 = 0  # voltages
+    voltage = {'CH1': 0, 'CH2': 0, 'CH3': 0, 'CH4': 0} # voltages
     time = 0  # seconds
     index_start = index_end = 0  # index values of signal slice
     points = 0
     fs = 0  # Sampling Frequency
-    status = {'CH1': True, 'CH2': True, 'CH3': True, 'CH4': True}
 
     def __init__(self, filename):
         self.filename = filename
@@ -33,7 +32,8 @@ class Oscilloscope:
                 logging.info(f'Save file "np{filename}.npy"')
 
     def read_data(self):
-        self.time, self.ch1, self.ch2, self.ch3, self.ch4 = self.data.T  # format of oscilloscope Rigol
+        # format of oscilloscope Rigol
+        self.time, self.voltage['CH1'], self.voltage['CH2'], self.voltage['CH3'], self.voltage['CH4'] = self.data.T
 
     def calc_index_start(self, time_start):
         for i in range(len(self.time)):
